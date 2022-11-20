@@ -16,6 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -57,6 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:layout_margin="5dp"
                 android:fontFamily="monospace"
                 android:text="What a day!!!"
                 android:textSize="20sp"
@@ -67,13 +69,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:scaleType="centerCrop"
+                android:layout_margin="5dp"
+                android:scaleType="fitXY"
                 app:srcCompat="@drawable/cryptopunk5822" />
 
             <ImageButton
                 android:id="@+id/like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:background="#FFFFFF"
                 android:contentDescription="@string/like"
                 android:minWidth="48dp"

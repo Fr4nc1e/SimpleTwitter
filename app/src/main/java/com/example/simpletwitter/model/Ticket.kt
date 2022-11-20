@@ -6,3 +6,7 @@ data class Ticket(
     val tweetImageUrl: String,
     val tweetPersonUID: String
 )
+
+fun Ticket.getType(): String {
+    return tweetPersonUID
+}
