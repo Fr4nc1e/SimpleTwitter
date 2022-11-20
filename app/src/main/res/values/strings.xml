@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Twitter</string>
+    <string name="enter_the_email">Enter the Email</string>
+    <string name="enter_the_password">Enter the Password</string>
+    <string name="login">Login</string>
+    <string name="todo">TODO</string>
+    <string name="post_your_twitter">Post your twitter</string>
+    <string name="toDo">TODO</string>
+    <string name="toDOOO">TODO</string>
+    <string name="gallery">Gallery</string>
+    <string name="Send">send</string>
+    <string name="user_name">User-Name</string>
+    <string name="like">like</string>
+</resources>
