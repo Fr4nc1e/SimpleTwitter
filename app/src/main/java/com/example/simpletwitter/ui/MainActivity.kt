@@ -12,19 +12,28 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simpletwitter.adapter.TweetAdapter
 import com.example.simpletwitter.databinding.ActivityMainBinding
 import com.example.simpletwitter.model.Ticket
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private var listTweets: ArrayList<Ticket> = arrayListOf()
+    private val listTweets: ArrayList<Ticket> = arrayListOf()
 
     private lateinit var email: String
+
+    private var database = FirebaseDatabase.getInstance()
+
+    private var myRef = database.reference
+
+    private lateinit var adapter: TweetAdapter
 
     companion object {
         lateinit var uid: String
@@ -36,22 +45,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // If anything wrong, test here!
         email = intent.getStringExtra("email").toString()
         uid = intent.getStringExtra("uid").toString()
-
-        listTweets.add(Ticket("0", "him", "url", "add"))
-        listTweets.add(Ticket("0", "him", "url", "ticket"))
-        listTweets.add(Ticket("0", "him", "url", "ticket"))
-        listTweets.add(Ticket("0", "him", "url", "ticket"))
-        listTweets.add(Ticket("0", "him", "url", "ticket"))
-        listTweets.add(Ticket("0", "him", "url", "ticket"))
 
         val layoutManager = LinearLayoutManager(this)
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = layoutManager
-        val adapter = TweetAdapter(this, listTweets)
+        adapter = TweetAdapter(this, listTweets)
         recyclerView.adapter = adapter
+        loadPost(adapter)
     }
 
     @Deprecated("Deprecated in Java")
@@ -74,8 +76,8 @@ class MainActivity : AppCompatActivity() {
                 }
             cursor?.moveToFirst()
             val columIndex = cursor?.getColumnIndex(filePathColum[0])
-            val picturePath = cursor!!.getString(columIndex!!)
-            cursor.close()
+            val picturePath = columIndex?.let { cursor.getString(it) }
+            cursor?.close()
             uploadImage(BitmapFactory.decodeFile(picturePath))
         }
     }
@@ -98,5 +100,28 @@ class MainActivity : AppCompatActivity() {
         }.addOnSuccessListener {
             downloadURL = it.storage.downloadUrl.toString()
         }
+    }
+
+    private fun loadPost(adapter: TweetAdapter) {
+        myRef.child("post")
+            .addValueEventListener(object : ValueEventListener {
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    try {
+                        listTweets.clear()
+                        listTweets.add(Ticket("0", "him", "url", "add"))
+                        val td = snapshot.value as HashMap<String, Any>
+                        for (key in td.keys) {
+                            val post = td[key] as HashMap<String, Any>
+                            listTweets.add(Ticket(key, post["text"] as String, post["postImage"] as String, post["userId"] as String))
+                        }
+                        adapter.notifyDataSetChanged()
+                    } catch (e: java.lang.Exception) {
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
     }
 }

@@ -5,8 +5,8 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.simpletwitter.adapter.viewHolder.addViewHolder
 import com.example.simpletwitter.adapter.viewHolder.ticketViewHolder
 import com.example.simpletwitter.databinding.AddTicketBinding
@@ -18,7 +18,7 @@ import com.example.simpletwitter.ui.MainActivity.Companion.downloadURL
 import com.example.simpletwitter.ui.MainActivity.Companion.uid
 import com.google.firebase.database.FirebaseDatabase
 
-class TweetAdapter(val activity: AppCompatActivity, private val listTweets: List<Ticket>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TweetAdapter(private val activity: AppCompatActivity, private val listTweets: List<Ticket>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val ADD: Int = 1
 
@@ -41,7 +41,13 @@ class TweetAdapter(val activity: AppCompatActivity, private val listTweets: List
                     loadImage(activity)
                 }
                 postButton.setOnClickListener {
-                    myRef.child("post").push().setValue(PostInfo(uid, etPost.text.toString(), downloadURL))
+                    myRef.child("post").push().setValue(
+                        PostInfo(
+                            uid,
+                            etPost.text.toString(),
+                            downloadURL
+                        )
+                    )
                     etPost.text.clear()
                 }
             }
@@ -56,6 +62,14 @@ class TweetAdapter(val activity: AppCompatActivity, private val listTweets: List
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val tweet = listTweets[position]
+        when (holder) {
+            is ticketViewHolder -> {
+                holder.txtTweet.text = tweet.tweetText
+                holder.txtUserName.text = tweet.tweetPersonUID
+                Glide.with(activity).load(tweet.tweetImageUrl).into(holder.tweetPic)
+            }
+        }
     }
 
     override fun getItemViewType(position: Int): Int = when (listTweets.get(position).getType()) {
